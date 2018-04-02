@@ -3,6 +3,10 @@ local touch_data = nil
 
 function init(self)
 	sysinfo = sys.get_sys_info()
+	if sysinfo.system_name ~= "HTML5" then return true end
+
+	label.set_text("/labels#does_support_multitouch", "Does support multitouch? " .. tostring(html5.run("does_support_multitouch()")))
+	label.set_text("/labels#touch_count", "Touch count: " .. tostring(html5.run("number_of_touches()")))
 end
 
 function final(self)
@@ -11,6 +15,7 @@ function final(self)
 end
 
 function update(self, dt)
+	label.set_text("/labels#touch_count", "Touch count: " .. tostring(html5.run("number_of_touches()")))
 	-- simulating real touch event data
 	-- will this even work?
 	-- even if it does it will be used a frame late

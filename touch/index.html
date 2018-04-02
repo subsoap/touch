@@ -65,6 +65,37 @@
     <script type='text/javascript' src="{{DEFOLD_ENGINE}}" async onload="{{DEFOLD_DEV_INIT}}"></script>
 
     <script type='text/javascript'>
+    var game_canvas = document.getElementById("canvas");
+	var touch_count = 0;
+    game_canvas.addEventListener("touchstart", function(evt) {
+        touch_count = evt.touches.length;
+		//console.log(touch_count);
+		//game_canvas.remove();
+        evt.preventDefault();
+    });    
+    game_canvas.addEventListener("touchmove", function(evt) {
+        touch_count = evt.touches.length;
+        evt.preventDefault();
+    });
+    game_canvas.addEventListener("touchend", function(evt) {
+        touch_count = evt.touches.length;
+        evt.preventDefault();
+    });	
+	
+	function does_support_multitouch() {
+		if (!(typeof game_canvas.ontouchstart != 'undefined')) {
+			return false;
+		}
+		return true;
+	}
+	
+	function number_of_touches() {
+		console.log(touch_count);
+		return touch_count;
+	}
+	</script>
+	
+    <script type='text/javascript'>
     var extra_params = {
         archive_location_filter: function( path ) {
             return ("{{DEFOLD_ARCHIVE_LOCATION_PREFIX}}" + path + "{{DEFOLD_ARCHIVE_LOCATION_SUFFIX}}");
