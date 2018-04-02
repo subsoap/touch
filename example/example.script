@@ -1,0 +1,40 @@
+local sysinfo = nil
+local touch_data = nil
+
+function init(self)
+	sysinfo = sys.get_sys_info()
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- simulating real touch event data
+	-- will this even work?
+	-- even if it does it will be used a frame late
+	--[[
+	if sysinfo.system_name == "HTML5" then
+		touch_data = touch.get_action_data()
+		on_input(self, hash("touch"), touch_data)
+	end
+	--]]
+	-- using active touch event data live
+	
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end
