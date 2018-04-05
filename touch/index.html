@@ -66,31 +66,103 @@
 
     <script type='text/javascript'>
     var game_canvas = document.getElementById("canvas");
-	var touch_count = 0;
+    var touch_count = 0;
+    var touch_data = {};
+	var zoom_factor = 1.0;
+	var original_width = {{DEFOLD_DISPLAY_WIDTH}};
+	var original_height = {{DEFOLD_DISPLAY_HEIGHT}};
+    var game_canvas_offset = offset(game_canvas);
+    //console.log(game_canvas_offset);
     game_canvas.addEventListener("touchstart", function(evt) {
         touch_count = evt.touches.length;
-		//console.log(touch_count);
-		//game_canvas.remove();
+        touch_data = evt;
         evt.preventDefault();
-    });    
+        update_touch_data(evt);
+    });
     game_canvas.addEventListener("touchmove", function(evt) {
         touch_count = evt.touches.length;
+        touch_data = evt.touches;
         evt.preventDefault();
+		update_touch_data(evt);
     });
     game_canvas.addEventListener("touchend", function(evt) {
         touch_count = evt.touches.length;
         evt.preventDefault();
-    });	
+        touch_data = {};
+    });
+    game_canvas.addEventListener("touchcancel", function(evt) {
+        touch_count = evt.touches.length;
+        evt.preventDefault();
+        touch_data = {};
+    });
+
+	function update_zoom_factor() {
+		zoom_factor = Math.min(game_canvas.width / original_width, game_canvas.height / original_height); 
+	}
 	
+	function filter_position(x,y) {
+		x = x / zoom_factor;
+		y = y / zoom_factor;
+		return {x:x, y:y};
+	//return vmath.vector3((M.xoffset or 0) + action.screen_x / (M.zoom_factor or 1), (M.yoffset or 0) + action.screen_y / (M.zoom_factor or 1), 0)
+	}
+	
+    function update_touch_data(evt) {
+        touch_data = [];
+		var canvas_offset = offset(game_canvas);
+		//console.log(canvas_offset);
+		//console.log(evt.touches);
+		//console.log(typeof evt.touches);
+		for (i = 0; i < evt.touches.length; i++){
+			//console.log(evt.touches[i]);
+			var id = evt.touches[i].identifier;
+			//console.log(game_canvas.height, evt.touches[i].pageY, canvas_offset.top);
+			var position = filter_position((evt.touches[i].pageX - canvas_offset.left) * (window.devicePixelRatio || 1), game_canvas.height - (evt.touches[i].pageY - canvas_offset.top) * (window.devicePixelRatio || 1));
+			touch_data[id] = {
+				// I don't understand why these need to be 2x to work
+				// the touch x,y seems to be half what it should be or something... while testing in Chrome simulating touch events
+				x: position.x,
+				y: position.y,
+			};
+		}
+		//console.log(touch_data[0]);
+		//console.log(game_canvas);
+//        evt.touches.forEach(function(touch) {
+//                console.log(touch);
+//                var id = touch.identifier;
+//                touch_data[id] = {
+//                    x: touch.pageX,
+//                    y: touch.pageY
+//                };
+//            });
+		}
+
+	function get_touch_data() {
+		//	array.forEach(function(item, i){
+		//		
+		//	});
+		//console.log(JSON.stringify(touch_data));
+		//return JSON.stringify(touch_data);
+		return JSON.stringify(touch_data);
+	}
+
+	function offset(el) {
+		var rect = el.getBoundingClientRect();
+		var top = rect.top + document.body.scrollTop;
+		return {
+			top: rect.top + document.body.scrollTop,
+			left: rect.left + document.body.scrollLeft
+		}
+	}
+
 	function does_support_multitouch() {
 		if (!(typeof game_canvas.ontouchstart != 'undefined')) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	function number_of_touches() {
-		console.log(touch_count);
 		return touch_count;
 	}
 	</script>
@@ -133,8 +205,10 @@
         game_canvas.width = width*dpi;
         game_canvas.height = height*dpi;
 
-        window.console.log("width: " + game_canvas.width + " > "+ game_canvas.style.width)
-        window.console.log("height:" + game_canvas.height + " > "+ game_canvas.style.height)
+        window.console.log("width: " + game_canvas.width + " > " + game_canvas.style.width);
+        window.console.log("height:" + game_canvas.height + " > " + game_canvas.style.height);
+		
+		update_zoom_factor();
     }
 
     resize_game_canvas();
