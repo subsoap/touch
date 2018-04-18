@@ -95,17 +95,14 @@
         evt.preventDefault();
         touch_data = {};
     });
-
-	function update_zoom_factor() {
-		zoom_factor = Math.min(game_canvas.width / original_width, game_canvas.height / original_height); 
-	}
 	
-	function filter_position(x,y) {
-		x = x / zoom_factor;
-		y = y / zoom_factor;
-		return {x:x, y:y};
-	//return vmath.vector3((M.xoffset or 0) + action.screen_x / (M.zoom_factor or 1), (M.yoffset or 0) + action.screen_y / (M.zoom_factor or 1), 0)
-	}
+	
+    function filter_position(x,y) {
+        return {
+            x: game_canvas.width / original_width,
+            y: game_canvas.height / original_height
+        };
+    }
 	
     function update_touch_data(evt) {
         touch_data = [];
@@ -119,8 +116,7 @@
 			//console.log(game_canvas.height, evt.touches[i].pageY, canvas_offset.top);
 			var position = filter_position((evt.touches[i].pageX - canvas_offset.left) * (window.devicePixelRatio || 1), game_canvas.height - (evt.touches[i].pageY - canvas_offset.top) * (window.devicePixelRatio || 1));
 			touch_data[id] = {
-				// I don't understand why these need to be 2x to work
-				// the touch x,y seems to be half what it should be or something... while testing in Chrome simulating touch events
+				// @AF fixed dpi coords calculations with changes in row 100 and 101 )) thanks for your work
 				x: position.x,
 				y: position.y,
 			};
@@ -207,8 +203,7 @@
 
         window.console.log("width: " + game_canvas.width + " > " + game_canvas.style.width);
         window.console.log("height:" + game_canvas.height + " > " + game_canvas.style.height);
-		
-		update_zoom_factor();
+	    
     }
 
     resize_game_canvas();
