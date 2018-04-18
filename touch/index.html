@@ -99,8 +99,8 @@
 	
     function filter_position(x,y) {
         return {
-            x: game_canvas.width / original_width,
-            y: game_canvas.height / original_height
+            x = x / (game_canvas.width / original_width);
+            y = y / (game_canvas.height / original_height);
         };
     }
 	
